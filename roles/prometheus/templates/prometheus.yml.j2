@@ -1,0 +1,28 @@
+# my global config
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+{% for target in alertmanager_targets %}
+          - {{ target | to_json }}
+{% endfor %}
+
+rule_files:
+{% for rule_file in rule_files %}
+  - "{{ rule_file }}"
+{% endfor %}
+
+scrape_configs:
+{% for job in scrape_configs %}
+  - job_name: "{{ job.job_name }}"
+    static_configs:
+      - targets:
+{% for target in job.targets %}
+          - {{ target | to_json }}
+{% endfor %}
+{% endfor %}
+
